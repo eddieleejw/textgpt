@@ -18,6 +18,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain_core.prompts import PromptTemplate
 from IPython.display import display, Image, Markdown
 from langchain_core.documents import Document
+from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 import os
 import tqdm
 import uuid
@@ -40,7 +41,7 @@ def pdf_to_doc(directory):
             # docs.append({'page_content' : page.page_content, 'metadata' : {'source' : file_name}})
             docs.append({'page_content' : page.page_content, 'source' : file_name})
 
-    print(f"Generated {len(docs)} chunks")
+    # print(f"Generated {len(docs)} chunks")
 
     return docs
 
@@ -59,7 +60,7 @@ def txt_to_doc(directory):
         for page in pages:
             docs.append({'page_content' : page.page_content, 'source' : file_name})
 
-    print(f"Generated {len(docs)} chunks")
+    # print(f"Generated {len(docs)} chunks")
 
     return docs
 
@@ -90,15 +91,53 @@ def pdf_txt_to_doc(directory):
         for page in pages:
             docs.append({'page_content' : page.page_content, 'source' : file_name})
 
-    print(f"Generated {len(docs)} chunks")
+    # print(f"Generated {len(docs)} chunks")
 
     return docs
 
-if __name__ == "__main__":
-    docs = pdf_txt_to_doc("dbs/lookahead/data/new_data")
 
-    with open("temp.txt", "w") as f:
-        for doc in docs:
-            f.write(f"Source: {doc['source']}\n\n{doc['page_content']}")
-            f.write("\n\n=================================\n\n")
-            print(len(doc['page_content']))
+def pkl_to_doc(directory):
+    '''
+    Note: will automatically split documents that are too long
+    '''
+
+    splitter = RecursiveCharacterTextSplitter()
+
+    pkl_paths = []
+
+    for file_name in os.listdir(directory):
+        if file_name.endswith(".pkl"):
+            pkl_file = os.path.join(directory, file_name)
+            pkl_paths.append(pkl_file)
+
+    docs = []
+
+    for pkl_file in tqdm.tqdm(pkl_paths):
+        with open(pkl_file, "rb") as f:
+            temp_docs = pickle.load(f)
+
+        # split docs
+        for doc in temp_docs:
+            page_content = doc['page_content']
+
+            split_texts = splitter.split_text(page_content)
+
+            for text in split_texts:
+                docs.append({'page_content': text, 'source': doc['source']})
+        
+    return docs
+
+
+def new_data_to_doc(directory):
+    docs = []
+    docs += pdf_txt_to_doc(directory)
+    docs += pkl_to_doc(directory)
+    print(f"Generated {len(docs)} chunks")
+    return docs
+
+
+
+if __name__ == "__main__":
+    docs = pkl_to_doc("dbs/gprMax/data/new_data")
+    
+    pass

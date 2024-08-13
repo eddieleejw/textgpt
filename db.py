@@ -24,7 +24,7 @@ import os
 import tqdm
 import uuid
 import pickle
-from docs import pdf_to_doc, pdf_txt_to_doc
+from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
 import argparse
 
 
@@ -136,11 +136,11 @@ def pdf_to_db(pdf_directory, embedding_function, llm, save_dir):
     # save artifacts
     save_artifacts(document_data = document_data, docstore = docstore, save_dir = save_dir)
 
-def pdf_txt_to_db(directory, embedding_function, llm, save_dir):
+def data_to_db(new_data_directory, embedding_function, llm, save_dir):
     os.makedirs(save_dir, exist_ok = False)
 
     # load in pdf and txts as "docs"
-    docs = pdf_txt_to_doc(directory)
+    docs = new_data_to_doc(new_data_directory)
 
     # create summarise and id, save to document_data
     document_data = create_document_data(docs, llm)
@@ -173,12 +173,13 @@ def add_pdfs_to_db(db_dir, embedding_function, new_pdf_directory, llm):
     save_artifacts(document_data = merged_document_data, docstore = merged_docstore, save_dir = db_dir)
 
 
-def add_pdf_txt_to_db(db_dir, embedding_function, new_pdf_directory, llm):
+def add_data_to_db(db_dir, embedding_function, new_data_directory, llm):
     # load old db
     db, docstore, document_data = load_db_and_artifcats(db_dir, embedding_function)
 
     # generate new document_data (summaries)
-    new_docs = pdf_txt_to_doc(new_pdf_directory)
+    new_docs = new_data_to_doc(new_data_directory)
+
     new_document_data = create_document_data(new_docs, llm)
 
     # add documents
@@ -193,13 +194,7 @@ def add_pdf_txt_to_db(db_dir, embedding_function, new_pdf_directory, llm):
     save_artifacts(document_data = merged_document_data, docstore = merged_docstore, save_dir = db_dir)
 
 
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("project", type=str, help="Name of the db directory e.g. 'online_rl'")
-    parser.add_argument("operation", type=str, help="Type of operation in ['new', 'update']")
-    args = parser.parse_args()
-
+def main(args):
     os.environ["OPENAI_API_KEY"] = input("What is your OpenAI API key?")
 
     root_dir = f"dbs/{args.project}"
@@ -222,7 +217,7 @@ if __name__ == "__main__":
         print(f"Fetching PDFs from {pdf_directory}")
         print(f"Saving to {root_dir}/db")
 
-        pdf_txt_to_db(pdf_directory, embedding_function = OpenAIEmbeddings(), llm = ChatOpenAI(model="gpt-4o-mini"), save_dir = f"{root_dir}/db")
+        data_to_db(pdf_directory, embedding_function = OpenAIEmbeddings(), llm = ChatOpenAI(model="gpt-4o-mini"), save_dir = f"{root_dir}/db")
 
     elif args.operation == 'update':
 
@@ -230,7 +225,7 @@ if __name__ == "__main__":
         print(f"Fetching PDFs from {root_dir}/data/new_data")
         print(f"Saving to {root_dir}/db")
 
-        add_pdf_txt_to_db(
+        add_data_to_db(
             db_dir = f"{root_dir}/db",
             embedding_function = OpenAIEmbeddings(),
             new_pdf_directory = f"{root_dir}/data/new_data",
@@ -238,3 +233,14 @@ if __name__ == "__main__":
             )
     else:
         print("Operation must either be 'new' or 'update") 
+
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("project", type=str, help="Name of the db directory e.g. 'online_rl'")
+    parser.add_argument("operation", type=str, help="Type of operation in ['new', 'update']")
+    args = parser.parse_args()
+
+    main(args)
