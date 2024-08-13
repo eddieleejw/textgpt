@@ -237,4 +237,4 @@ if __name__ == "__main__":
             llm = ChatOpenAI(model="gpt-4o-mini")
             )
     else:
-        print("Operation must either be 'new' or 'update")
+        print("Operation must either be 'new' or 'update") 
