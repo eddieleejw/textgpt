@@ -125,8 +125,7 @@ def print_answer(answer, sources, answer_path):
 
     print(f"Saved to {answer_path}")
 
-if __name__ == "__main__":
-
+def main():
     os.environ["OPENAI_API_KEY"] = input("What is your OpenAI API key?")
 
     embedding_function = OpenAIEmbeddings()
@@ -157,3 +156,8 @@ if __name__ == "__main__":
         copy_prompt(prompt, sources)
     else:
         print("No such type. Enter either 'query' or 'prompt'")
+
+
+if __name__ == "__main__":
+
+    main()
