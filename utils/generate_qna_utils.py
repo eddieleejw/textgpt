@@ -93,7 +93,6 @@ def load_contents(directory):
     return contents
 
 def main():
-    os.environ["OPENAI_API_KEY"] = input("What is your OpenAI API key?")
     contents_directory = "dbs/gprMax/data/old_data/pkl"
     
     if input(f"Loading contents form {contents_directory} [Y/N]") in ["Y", "y"]:

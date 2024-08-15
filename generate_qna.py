@@ -17,4 +17,5 @@ import pyperclip
 from utils import generate_qna_utils
 
 if __name__ == "__main__":
+    os.environ["OPENAI_API_KEY"] = input("What is your OpenAI API key?")
     generate_qna_utils.main()

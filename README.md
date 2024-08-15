@@ -1,11 +1,11 @@
 # TextGPT
 Leverage OpenAI ChatGPT to perform RAG over a collection of documents
 
-# Installation instructions
+# Installation
 
 1. Open terminal and navigate to the directory you want to put the repo in
-2. In the terminal type: `git clone [this repo]`
-3. In the terminal type: `cd gprmax_chatbot`
+2. In the terminal type: `git clone https://github.com/eddieleejw/textgpt.git`
+3. In the terminal type: `cd textgpt`
 4. In the terminal type: `conda env create -f environment.yml`
 5. In the terminal type: `streamlit run streamlit.py`
 6. In a browser, type into the address bar: `http://localhost:8501`
@@ -25,14 +25,19 @@ You will need a valid OpenAI API key to use this chatbot
 
 The chatbot will ask you for your OpenAI API key, in order to access the OpenAI language models. 
 
+### Building a database
 
-### Using Streamlit
+### Querying the database
 
-1. Put in your OpenAI API key
+1. Open streamlit with `streamlit run streamlit.py`
 
-2. Put in your query
+2. Put in your OpenAI API key
 
-3. Press `Run`
+3. Select your project
+
+4. Put in your query
+
+5. Press `Run`
 
 # Example
 
