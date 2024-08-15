@@ -24,7 +24,8 @@ import os
 import tqdm
 import uuid
 import pickle
-from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
+# from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
+from utils.docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
 import argparse
 
 
