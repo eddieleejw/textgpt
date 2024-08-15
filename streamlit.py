@@ -17,13 +17,26 @@ import argparse
 import pyperclip
 from query import load_db, query_chatbot
 
+# read in available projects once
+if "available_projects" not in st.session_state:
+    st.write("Adding available projects...")
+
+    available_projects = []
+
+    for file_name in os.listdir("dbs"):
+        if file_name not in [".DS_Store"]:
+            available_projects.append(file_name)
+    
+    st.session_state["available_projects"] = tuple(available_projects)
+    
 
 
-st.title("textGPT")
+st.title("TextGPT")
 
 st.session_state["openai_api_key"] = st.text_input("OpenAI API key here")
 
-st.session_state["project"] = st.text_input("Project here")
+# st.session_state["project"] = st.text_input("Project here")
+st.session_state["project"] = st.selectbox("Select project", st.session_state["available_projects"])
 
 st.session_state["query"] = st.text_input("Query here")
 
