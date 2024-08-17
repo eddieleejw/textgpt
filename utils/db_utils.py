@@ -126,7 +126,7 @@ def pdf_to_db(pdf_directory, embedding_function, llm, save_dir):
     save_artifacts(document_data = document_data, docstore = docstore, save_dir = save_dir)
 
 def data_to_db(new_data_directory, embedding_function, llm, save_dir):
-    os.makedirs(save_dir, exist_ok = False)
+    os.makedirs(save_dir, exist_ok = True)
 
     # load in pdf and txts as "docs"
     docs = new_data_to_doc(new_data_directory)

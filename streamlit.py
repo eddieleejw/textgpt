@@ -16,11 +16,11 @@ import pickle
 import argparse
 import pyperclip
 from query import load_db, query_chatbot
+from utils.db_utils import add_data_to_db, data_to_db
+import time
 
 # read in available projects once
 if "available_projects" not in st.session_state:
-    st.write("Adding available projects...")
-
     available_projects = []
 
     for file_name in os.listdir("dbs"):
@@ -34,9 +34,84 @@ if "available_projects" not in st.session_state:
 st.title("TextGPT")
 
 st.session_state["openai_api_key"] = st.text_input("OpenAI API key here")
+os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
+
+st.divider()
+
+
+
+st.header("Build database")
+
+st.session_state["db_type"] = st.selectbox("Database operation", ["Build new", "Update existing"])
+
+st.session_state["db_data_path"] = st.text_input("Path to new data directory")
+
+if st.session_state["db_type"] == "Update existing":
+    st.session_state["db_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "2")
+    root_dir = f"dbs/{st.session_state["db_project"]}"
+
+    st.write(f"NOTE: Fetching new data from `{st.session_state["db_data_path"]}`")
+    st.write(f"NOTE: Existing database must be at`{root_dir}/db`")
+
+    if st.button("Go!"):
+
+        new_data_directory = st.session_state["db_data_path"]
+        if not os.path.exists(new_data_directory):
+            st.error("New data directory does not exist")
+        elif not os.listdir(new_data_directory):
+            st.error("New data directory is empty")
+        elif not st.session_state["db_project"]:
+            st.error("Project not specified")
+        elif not st.session_state["openai_api_key"]:
+            st.error("Please enter an OpenAI API key")
+        else:
+            with st.spinner("Updating database..."):
+
+                add_data_to_db(
+                    db_dir = f"{root_dir}/db",
+                    embedding_function = OpenAIEmbeddings(),
+                    new_pdf_directory = f"{root_dir}/data/new_data",
+                    llm = ChatOpenAI(model="gpt-4o-mini")
+                    )
+            st.success("Database updated!")
+else:
+    st.session_state["db_project"] = st.text_input("Name of project")
+    root_dir = f"dbs/{st.session_state["db_project"]}"
+
+    st.write(f"NOTE: Fetching new data from `{st.session_state["db_data_path"]}`")
+    st.write(f"NOTE: Writing database to `{root_dir}/db`")
+
+    if st.button("Go!"):
+
+        new_data_directory = st.session_state["db_data_path"]
+        if not os.path.exists(new_data_directory):
+            st.error("New data directory does not exist")
+        elif not os.listdir(new_data_directory):
+            st.error("New data directory is empty")
+        elif not st.session_state["db_project"]:
+            st.error("Project not specified")
+        elif not st.session_state["openai_api_key"]:
+            st.error("Please enter an OpenAI API key")
+        else:
+            with st.spinner("Creating database..."):
+                data_to_db(new_data_directory, embedding_function = OpenAIEmbeddings(), llm = ChatOpenAI(model="gpt-4o-mini"), save_dir = f"{root_dir}/db")
+
+            st.success("Database created!")
+
+st.divider()
+
+
+
+
+
+
+
+st.header("Query")
+
+
 
 # st.session_state["project"] = st.text_input("Project here")
-st.session_state["project"] = st.selectbox("Select project", st.session_state["available_projects"])
+st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "1")
 
 st.session_state["query"] = st.text_input("Query here")
 
@@ -49,25 +124,23 @@ st.button("Reset", type = "primary")
 
 if st.button("Run"):
     if st.session_state["openai_api_key"] == "":
-        st.write("Please enter an OpenAI API key")
+        st.error("Please enter an OpenAI API key")
         st.stop()
-    elif st.session_state["project"] == "":
-        st.write("Please enter a project")
+    elif st.session_state["query_project"] == "":
+        st.error("Please enter a project")
         st.stop()
     elif st.session_state["query"] == "":
-        st.write("Please enter a query")
+        st.error("Please enter a query")
         st.stop()
     
 
     with st.spinner("Running"):
 
-        os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
-
         embedding_function = OpenAIEmbeddings()
         llm = ChatOpenAI(model = "gpt-4o-mini")
 
 
-        root_dir = f"dbs/{st.session_state["project"]}"
+        root_dir = f"dbs/{st.session_state["query_project"]}"
         db_dir = f"{root_dir}/db"
 
         # check if db exists
