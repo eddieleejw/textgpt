@@ -21,10 +21,9 @@ import uuid
 import pickle
 import argparse
 import pyperclip
-from utils.query_utils import *
 
 
-'''
+
 def query_chatbot(query, db, docstore, llm):
 
 
@@ -125,41 +124,3 @@ def print_answer(answer, sources, answer_path):
     print("\n\n")
 
     print(f"Saved to {answer_path}")
-'''
-
-def main():
-    os.environ["OPENAI_API_KEY"] = input("What is your OpenAI API key?")
-
-    embedding_function = OpenAIEmbeddings()
-    llm = ChatOpenAI(model = "gpt-4o-mini")
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("project", type=str, help="Name of the db directory e.g. 'online_rl'")
-    parser.add_argument("type", type=str, help="Specify whether to get full answer (query) or just copy prompt (prompt)")
-    parser.add_argument('query', type=str, help="Query for chatbot to answer")
-    args = parser.parse_args()
-
-    root_dir = f"dbs/{args.project}"
-    db_dir = f"{root_dir}/db"
-
-    if args.type == "query":
-        answer_path = f"{root_dir}/answers/{str(uuid.uuid4())}.md"
-        os.makedirs(f"{root_dir}/answers", exist_ok=True)
-
-        db, docstore = load_db(db_dir, embedding_function)
-        answer, sources = query_chatbot(args.query, db, docstore, llm)
-        save_answer_and_sources(answer_path, args.query, answer, sources)
-
-        print_answer(answer, sources, answer_path)
-
-    elif args.type == "prompt":
-        db, docstore = load_db(db_dir, embedding_function)
-        prompt, sources = get_prompt(args.query, db, docstore)
-        copy_prompt(prompt, sources)
-    else:
-        print("No such type. Enter either 'query' or 'prompt'")
-
-
-if __name__ == "__main__":
-
-    main()
