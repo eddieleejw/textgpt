@@ -57,15 +57,19 @@ if st.session_state["db_type"] == "Update existing":
     if st.button("Go!"):
 
         new_data_directory = st.session_state["db_data_path"]
-        if not os.path.exists(new_data_directory):
-            st.error("New data directory does not exist")
-        elif not os.listdir(new_data_directory):
-            st.error("New data directory is empty")
-        elif not st.session_state["db_project"]:
-            st.error("Project not specified")
-        elif not st.session_state["openai_api_key"]:
-            st.error("Please enter an OpenAI API key")
-        else:
+        if db_error_check(new_data_directory, st.session_state):
+
+
+
+        # if not os.path.exists(new_data_directory):
+        #     st.error("New data directory does not exist")
+        # elif not os.listdir(new_data_directory):
+        #     st.error("New data directory is empty")
+        # elif not st.session_state["db_project"]:
+        #     st.error("Project not specified")
+        # elif not st.session_state["openai_api_key"]:
+        #     st.error("Please enter an OpenAI API key")
+        # else:
             with st.spinner("Updating database..."):
 
                 add_data_to_db(
@@ -85,15 +89,16 @@ else:
     if st.button("Go!"):
 
         new_data_directory = st.session_state["db_data_path"]
-        if not os.path.exists(new_data_directory):
-            st.error("New data directory does not exist")
-        elif not os.listdir(new_data_directory):
-            st.error("New data directory is empty")
-        elif not st.session_state["db_project"]:
-            st.error("Project not specified")
-        elif not st.session_state["openai_api_key"]:
-            st.error("Please enter an OpenAI API key")
-        else:
+        if db_error_check(new_data_directory, st.session_state):
+        # if not os.path.exists(new_data_directory):
+        #     st.error("New data directory does not exist")
+        # elif not os.listdir(new_data_directory):
+        #     st.error("New data directory is empty")
+        # elif not st.session_state["db_project"]:
+        #     st.error("Project not specified")
+        # elif not st.session_state["openai_api_key"]:
+        #     st.error("Please enter an OpenAI API key")
+        # else:
             with st.spinner("Creating database..."):
                 data_to_db(new_data_directory, embedding_function = OpenAIEmbeddings(), llm = ChatOpenAI(model="gpt-4o-mini"), save_dir = f"{root_dir}/db")
 
