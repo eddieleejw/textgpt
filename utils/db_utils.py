@@ -29,7 +29,15 @@ def summarize_texts(texts, llm):
 
     chain = ({"doc" : lambda x : x} | prompt_template | llm | StrOutputParser())
 
-    summaries = chain.batch(texts)
+    # batch 100 at a time
+    print("Batching 100 queries at a time")
+    for i in tqdm.tqdm(range((len(texts)//100)+1), "batches"):
+        summaries += chain.batch(texts[100*i:100*(i+1)])
+
+    assert len(summaries) == len(texts)
+
+    # for _ in tqdm.tqdm(range(1)):
+    #     summaries = chain.batch(texts)
 
     return summaries
 

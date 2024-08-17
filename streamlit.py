@@ -18,6 +18,7 @@ import pyperclip
 from query import load_db, query_chatbot
 from utils.db_utils import add_data_to_db, data_to_db
 import time
+from utils.streamlit_utils import db_error_check
 
 # read in available projects once
 if "available_projects" not in st.session_state:
@@ -70,7 +71,7 @@ if st.session_state["db_type"] == "Update existing":
                 add_data_to_db(
                     db_dir = f"{root_dir}/db",
                     embedding_function = OpenAIEmbeddings(),
-                    new_pdf_directory = f"{root_dir}/data/new_data",
+                    new_data_directory = new_data_directory,
                     llm = ChatOpenAI(model="gpt-4o-mini")
                     )
             st.success("Database updated!")
