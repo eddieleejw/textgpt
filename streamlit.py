@@ -18,17 +18,21 @@ import pyperclip
 from query import load_db, query_chatbot
 from utils.db_utils import add_data_to_db, data_to_db
 import time
-from utils.streamlit_utils import db_error_check
+from utils.streamlit_utils import db_error_check, print_bertscores, generate_qna_streamlit, rescan_projects
+from utils.evaluation_utils import evaluate_bertscore
+import uuid
+
 
 # read in available projects once
 if "available_projects" not in st.session_state:
-    available_projects = []
+    # available_projects = []
 
-    for file_name in os.listdir("dbs"):
-        if file_name not in [".DS_Store"]:
-            available_projects.append(file_name)
+    # for file_name in os.listdir("dbs"):
+    #     if file_name not in [".DS_Store"]:
+    #         available_projects.append(file_name)
     
-    st.session_state["available_projects"] = tuple(available_projects)
+    # st.session_state["available_projects"] = tuple(available_projects)
+    rescan_projects(st.session_state)
     
 
 
@@ -48,7 +52,11 @@ st.session_state["db_type"] = st.selectbox("Database operation", ["Build new", "
 st.session_state["db_data_path"] = st.text_input("Path to new data directory")
 
 if st.session_state["db_type"] == "Update existing":
-    st.session_state["db_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "2")
+    st.session_state["db_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "1")
+
+    if st.button("Rescan projects", type = "primary", key = "2"):
+        rescan_projects(st.session_state)
+
     root_dir = f"dbs/{st.session_state["db_project"]}"
 
     st.write(f"NOTE: Fetching new data from `{st.session_state["db_data_path"]}`")
@@ -117,11 +125,9 @@ st.header("Query")
 
 
 # st.session_state["project"] = st.text_input("Project here")
-st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "1")
+st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
 
 st.session_state["query"] = st.text_input("Query here")
-
-st.button("Reset", type = "primary")
 
 # if st.button("Display"):
 #     st.write("openai_api_key" in st.session_state)
@@ -175,3 +181,60 @@ if st.button("Run"):
         for s in sources:
             st.write(s)
         
+
+st.divider()
+
+st.header("Evaluate")
+
+st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "4")
+st.session_state["eval_data_path"] = st.text_input("Specify path to directory holding evaluation data. The chatbot will be evaluated on its performance on these documents. It is recommended to evaluate on the documents the chatbot was trained on.")
+st.session_state["eval_number"] = st.text_input("How many evaluation data points to use. Higher yields more accurate results but will take longer and use more API requests. Leave blank to use all avaialble data")
+
+if st.button("Run", key = "5"):
+    if st.session_state["openai_api_key"] == "":
+        st.error("Please enter an OpenAI API key")
+        st.stop()
+    elif st.session_state["query_project"] == "":
+        st.error("Please enter a project")
+        st.stop()
+    elif not os.path.exists(f"dbs/{st.session_state['query_project']}/db"):
+        st.error(f"Could not find database (expected at `dbs/{st.session_state['query_project']}/db`)")
+        st.stop()
+    
+    if not os.path.exists(f"dbs/{st.session_state['query_project']}/db/chroma_db") or not os.path.exists(f"dbs/{st.session_state['query_project']}/db/docstore.pkl") or not os.path.exists(f"dbs/{st.session_state['query_project']}/db/document_data.pkl"):
+        st.error("Database missing files:")
+        if not os.path.exists(f"dbs/{st.session_state['query_project']}/db/chroma_db"):
+            st.error(f"missing directory `dbs/{st.session_state['query_project']}/db/chroma_db`")
+        
+        if not os.path.exists(f"dbs/{st.session_state['query_project']}/db/docstore.pkl"):
+            st.error(f"missing file `dbs/{st.session_state['query_project']}/db/docstore.pkl`")
+        
+        if not os.path.exists(f"dbs/{st.session_state['query_project']}/db/document_data.pkl"):
+            st.error(f"missing file `dbs/{st.session_state['query_project']}/db/document_data.pkl`")
+
+        st.stop()
+    
+
+    with st.spinner("Generating evaluation dataset"):
+
+        embedding_function = OpenAIEmbeddings()
+        llm = ChatOpenAI(model = "gpt-4o-mini")
+
+        qa_pairs = generate_qna_streamlit(st.session_state["eval_data_path"])
+
+
+    with st.spinner("Evaluating"):
+
+        embedding_function = OpenAIEmbeddings()
+        llm = ChatOpenAI(model = "gpt-4o-mini")
+
+        db, docstore = load_db(f"dbs/{st.session_state['query_project']}/db", embedding_function)
+
+        if st.session_state["eval_number"] == "":
+            n = len(qa_pairs)
+        else:
+            n = int(st.session_state["eval_number"])
+
+        bertscores_dict = evaluate_bertscore(db, docstore, llm, qa_pairs = qa_pairs, n = n)
+
+        print_bertscores(bertscores_dict)

@@ -42,7 +42,7 @@ def generate_answers(qa_pairs, db, docstore, llm, n = 50):
     n = min(len(qa_pairs), n)
     qa_pairs = random.sample(qa_pairs, n)
 
-    c_log(f"Generating {n} answers")
+    c_log(f"Chat bot answering {n} evaluation question")
 
     chatbot_answers = []
     for qa in qa_pairs:
@@ -50,7 +50,7 @@ def generate_answers(qa_pairs, db, docstore, llm, n = 50):
         target = qa['Answer']
         chatbot_answers.append((query, query_chatbot(query, db, docstore, llm)[0], target))
     
-    c_log("Finished generating answers")
+    c_log("Finished answering evaluation question")
 
     return chatbot_answers
 
