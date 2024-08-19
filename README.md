@@ -42,3 +42,11 @@ The chatbot will ask you for your OpenAI API key, in order to access the OpenAI 
 # Example
 
 ![test](images/demo.png)
+
+# Troubleshooting
+
+## Windows installation
+
+Ensure that you have [Microsoft Visual C++ 14.0](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or greater installed
+
+![blah](images\windows_vs_install.png)
