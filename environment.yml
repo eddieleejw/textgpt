@@ -1,7 +1,0 @@
-name: langchain
-channels:
-  - defaults
-dependencies:
-  - pip
-  - ipython
-prefix: /Users/eddie/miniconda3/envs/langchain

@@ -45,7 +45,7 @@ st.divider()
 
 
 
-st.header("Build database")
+st.header("Build")
 
 st.session_state["db_type"] = st.selectbox("Database operation", ["Build new", "Update existing"])
 
@@ -115,82 +115,15 @@ else:
 st.divider()
 
 
-
-
-
-
-
-st.header("Query")
-
-
-
-# st.session_state["project"] = st.text_input("Project here")
-st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
-
-st.session_state["query"] = st.text_input("Query here")
-
-# if st.button("Display"):
-#     st.write("openai_api_key" in st.session_state)
-#     st.write("project" in st.session_state)
-#     st.write("query" in st.session_state)
-
-if st.button("Run"):
-    if st.session_state["openai_api_key"] == "":
-        st.error("Please enter an OpenAI API key")
-        st.stop()
-    elif st.session_state["query_project"] == "":
-        st.error("Please enter a project")
-        st.stop()
-    elif st.session_state["query"] == "":
-        st.error("Please enter a query")
-        st.stop()
-    
-
-    with st.spinner("Running"):
-
-        embedding_function = OpenAIEmbeddings()
-        llm = ChatOpenAI(model = "gpt-4o-mini")
-
-
-        root_dir = f"dbs/{st.session_state["query_project"]}"
-        db_dir = f"{root_dir}/db"
-
-        # check if db exists
-        if not os.path.exists(root_dir):
-            st.error(f"Project does not exist, or is in the incorrect location. Make sure that the project exists and has path `{root_dir}`")
-            st.stop()
-        elif not os.path.exists(db_dir):
-            st.error(f"Database does not exist, or is in the incorrect location. Make sure that the database exists and has path `{db_dir}`")
-            st.stop()
-
-        answer_path = f"{root_dir}/answers/{str(uuid.uuid4())}.md"
-        os.makedirs(f"{root_dir}/answers", exist_ok=True)
-
-        db, docstore = load_db(db_dir, embedding_function)
-
-        try:
-            answer, sources = query_chatbot(st.session_state["query"], db, docstore, llm)
-        except:
-            st.error("Unable to generate answer. Please check OpenAI API key, or try again later")
-            st.stop()
-
-        st.header("Answer:")
-        st.markdown(answer)
-
-        st.header("Sources:")
-        for s in sources:
-            st.write(s)
-        
-
-st.divider()
-
 st.header("Evaluate")
 
 st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "4")
+if st.button("Rescan projects", type = "primary", key = "7"):
+    rescan_projects(st.session_state)
 st.session_state["eval_data_path"] = st.text_input("Specify path to directory holding evaluation data. The chatbot will be evaluated on its performance on these documents. It is recommended to evaluate on the documents the chatbot was trained on.")
-st.session_state["eval_number"] = st.text_input("How many evaluation data points to use. Higher yields more accurate results but will take longer and use more API requests. Leave blank to use all avaialble data")
+st.session_state["eval_number"] = st.text_input("How many evaluation data points to use. Higher yields more accurate results but will take longer and use more API requests. Leave blank to use all available data")
 
-if st.button("Run", key = "5"):
+if st.button("Go!", key = "5"):
     if st.session_state["openai_api_key"] == "":
         st.error("Please enter an OpenAI API key")
         st.stop()
@@ -238,3 +171,71 @@ if st.button("Run", key = "5"):
         bertscores_dict = evaluate_bertscore(db, docstore, llm, qa_pairs = qa_pairs, n = n)
 
         print_bertscores(bertscores_dict)
+
+
+
+st.divider()
+
+st.header("Query")
+
+
+
+# st.session_state["project"] = st.text_input("Project here")
+st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
+if st.button("Rescan projects", type = "primary", key = "6"):
+    rescan_projects(st.session_state)
+
+st.session_state["query"] = st.text_input("Query here")
+
+# if st.button("Display"):
+#     st.write("openai_api_key" in st.session_state)
+#     st.write("project" in st.session_state)
+#     st.write("query" in st.session_state)
+
+if st.button("Go!", key = "8"):
+    if st.session_state["openai_api_key"] == "":
+        st.error("Please enter an OpenAI API key")
+        st.stop()
+    elif st.session_state["query_project"] == "":
+        st.error("Please enter a project")
+        st.stop()
+    elif st.session_state["query"] == "":
+        st.error("Please enter a query")
+        st.stop()
+    
+
+    with st.spinner("Running"):
+
+        embedding_function = OpenAIEmbeddings()
+        llm = ChatOpenAI(model = "gpt-4o-mini")
+
+
+        root_dir = f"dbs/{st.session_state["query_project"]}"
+        db_dir = f"{root_dir}/db"
+
+        # check if db exists
+        if not os.path.exists(root_dir):
+            st.error(f"Project does not exist, or is in the incorrect location. Make sure that the project exists and has path `{root_dir}`")
+            st.stop()
+        elif not os.path.exists(db_dir):
+            st.error(f"Database does not exist, or is in the incorrect location. Make sure that the database exists and has path `{db_dir}`")
+            st.stop()
+
+        answer_path = f"{root_dir}/answers/{str(uuid.uuid4())}.md"
+        os.makedirs(f"{root_dir}/answers", exist_ok=True)
+
+        db, docstore = load_db(db_dir, embedding_function)
+
+        try:
+            answer, sources = query_chatbot(st.session_state["query"], db, docstore, llm)
+        except:
+            st.error("Unable to generate answer. Please check OpenAI API key, or try again later")
+            st.stop()
+
+        st.header("Answer:")
+        st.markdown(answer)
+
+        st.header("Sources:")
+        for s in sources:
+            st.write(s)
+        
