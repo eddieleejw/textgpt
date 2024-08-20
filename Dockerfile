@@ -1,7 +1,13 @@
 FROM python:3.12
 
-ADD streamlit.py .
+WORKDIR /textgpt-app
 
-RUN pip install -r requirements_win.txt
+COPY requirements_docker.txt .
 
-CMD [ "streamlit", "run", "./streamlit.py"]
+RUN pip install -r requirements_docker.txt
+
+COPY ./utils ./utils
+
+COPY streamlit.py streamlit.py
+
+CMD ["streamlit", "run", "streamlit.py"]
