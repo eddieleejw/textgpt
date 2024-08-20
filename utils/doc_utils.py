@@ -8,20 +8,11 @@ all functions in this file are concerned with making `doc` files, which have for
 ]
 '''
 
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import UnstructuredPDFLoader, TextLoader
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 from langchain.chains.question_answering import load_qa_chain
-from langchain_core.prompts import PromptTemplate
-from IPython.display import display, Image, Markdown
-from langchain_core.documents import Document
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 import os
 import tqdm
-import uuid
 import pickle
 
 

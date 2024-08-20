@@ -1,19 +1,14 @@
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain_core.prompts import PromptTemplate
-from IPython.display import display, Image, Markdown
 from langchain_core.documents import Document
 import os
 import tqdm
 import uuid
 import pickle
 # from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
-from utils.docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
+from utils.doc_utils import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
 import argparse
 
 

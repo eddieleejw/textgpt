@@ -2,23 +2,11 @@
 Generate question-answer pairs based on a given collection of documents
 '''
 
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.document_loaders import UnstructuredPDFLoader, TextLoader
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain
 from langchain_core.prompts import PromptTemplate
-from IPython.display import display, Image, Markdown
-from langchain_core.documents import Document
-import os
-import tqdm
-import uuid
 import pickle
-import argparse
-import pyperclip
-import docs
+import utils.doc_utils as doc_utils
 
 def generate_qna(contents, llm):
     '''
@@ -88,7 +76,7 @@ def save_qa_pairs(qa_pairs, directory):
             pickle.dump(qa_pairs, f)
 
 def load_contents(directory):
-    doc_list = docs.new_data_to_doc(directory)
+    doc_list = doc_utils.new_data_to_doc(directory)
     contents = [doc['page_content'] for doc in doc_list]
     return contents
 

@@ -1,23 +1,10 @@
 import streamlit as st
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.document_loaders import UnstructuredPDFLoader, TextLoader
-from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain_core.prompts import PromptTemplate
-from IPython.display import display, Image, Markdown
-from langchain_core.documents import Document
 import os
-import tqdm
 import uuid
-import pickle
-import argparse
-import pyperclip
-from query import load_db, query_chatbot
+from utils.query_utils import load_db, query_chatbot
 from utils.db_utils import add_data_to_db, data_to_db
-import time
 from utils.streamlit_utils import db_error_check, print_bertscores, generate_qna_streamlit, rescan_projects
 from utils.evaluation_utils import evaluate_bertscore
 import uuid
@@ -56,6 +43,7 @@ if st.session_state["db_type"] == "Update existing":
 
     if st.button("Rescan projects", type = "primary", key = "2"):
         rescan_projects(st.session_state)
+        st.rerun()
 
     root_dir = f"dbs/{st.session_state["db_project"]}"
 
@@ -120,6 +108,7 @@ st.header("Evaluate")
 st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "4")
 if st.button("Rescan projects", type = "primary", key = "7"):
     rescan_projects(st.session_state)
+    st.rerun()
 st.session_state["eval_data_path"] = st.text_input("Specify path to directory holding evaluation data. The chatbot will be evaluated on its performance on these documents. It is recommended to evaluate on the documents the chatbot was trained on.")
 st.session_state["eval_number"] = st.text_input("How many evaluation data points to use. Higher yields more accurate results but will take longer and use more API requests. Leave blank to use all available data")
 
@@ -184,6 +173,7 @@ st.header("Query")
 st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
 if st.button("Rescan projects", type = "primary", key = "6"):
     rescan_projects(st.session_state)
+    st.rerun()
 
 st.session_state["query"] = st.text_input("Query here")
 
