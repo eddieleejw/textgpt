@@ -1,7 +1,13 @@
 # TextGPT
 Leverage OpenAI ChatGPT to perform RAG over a collection of documents
 
-# Installation (Windows 11)
+# Installation
+
+If you are on Windows 11 or Apple silicon, you may want to try their respective installation instructions first, as that removed the need for Docker
+
+If the installation instructions are not working or don't exist for your system, use the Docker installation instead
+
+## Windows 11
 
 1. Open terminal and navigate to the directory you want to put the repo in
 2. In the terminal type:
@@ -15,7 +21,7 @@ streamlit run streamlit.py
 ```
 3. In a web browser, type into the address bar: `http://localhost:8501`
 
-# Installation (Mac M1)
+## Mac M1
 1. Open terminal and navigate to the directory you want to put the repo in
 2. In the terminal type:
 ```
@@ -28,19 +34,19 @@ streamlit run streamlit.py
 ```
 3. In a web browser, type into the address bar: `http://localhost:8501`
 
-# Installation (Docker)
+## Installation (Docker)
 
 1. Install [Docker](https://www.docker.com/) 
     - Confirm docker installation by opening terminal and typing `docker -v`. It should tell you your docker version
-1. Open terminal and navigate to the directory you want to put the repo in
-2. In the terminal type:
+2. Open terminal and navigate to the directory you want to put the repo in
+3. In the terminal type:
 ```
 git clone https://github.com/eddieleejw/textgpt.git
 cd textgpt
 docker build -t textgpt-image .
 docker run -p 8501:8501 textgpt-image
 ```
-3. In a web browser, type into the address bar: `http://localhost:8501` (not `http://0.0.0.0:8501`)
+4. In a web browser, type into the address bar: `http://localhost:8501` (not `http://0.0.0.0:8501`)
 
 
 
