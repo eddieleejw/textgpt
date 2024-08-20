@@ -57,6 +57,10 @@ def generate_qna_streamlit(contents_directory):
 def rescan_projects(session_state):
     available_projects = []
 
+    # make dbs directory if it DNE
+    if not os.path.exists("dbs"):
+        os.makedirs("dbs")
+
     for file_name in os.listdir("dbs"):
         if file_name not in [".DS_Store"]:
             available_projects.append(file_name)
