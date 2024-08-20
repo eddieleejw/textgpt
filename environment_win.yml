@@ -4,4 +4,3 @@ channels:
   - conda-forge
 dependencies:
   - pip
-prefix: C:\Users\Eddie\miniconda3\envs\textgpt
