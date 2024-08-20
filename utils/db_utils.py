@@ -1,6 +1,5 @@
 from langchain_chroma import Chroma
 from langchain_core.output_parsers import StrOutputParser
-from langchain.chains.question_answering import load_qa_chain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
 import os
@@ -9,7 +8,6 @@ import uuid
 import pickle
 # from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
 from utils.doc_utils import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
-import argparse
 
 
 

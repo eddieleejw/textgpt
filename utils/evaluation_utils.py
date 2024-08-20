@@ -5,7 +5,6 @@ Module for functions used in evaluation
 import pickle
 import random
 from .query_utils import query_chatbot
-from transformers import BertTokenizer, BertModel
 from bert_score import BERTScorer
 import statistics
 
