@@ -10,4 +10,4 @@ COPY ./utils ./utils
 
 COPY streamlit.py streamlit.py
 
-CMD ["streamlit", "run", "streamlit.py"]
+CMD ["streamlit", "run", "streamlit.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
