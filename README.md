@@ -4,16 +4,29 @@ Leverage OpenAI ChatGPT to perform RAG over a collection of documents
 # Installation (Windows 11)
 
 1. Open terminal and navigate to the directory you want to put the repo in
-2. In the terminal type: `git clone https://github.com/eddieleejw/textgpt.git`
-3. In the terminal type: `cd textgpt`
-4. In the terminal type: `conda env create -f environment_win.yml`
-5. Activate the virtual environment with `conda activate textgpt`
-5. In the terminal type: `pip install requirements_win.txt`
-5. In the terminal type: `streamlit run streamlit.py`
-6. In a browser, type into the address bar: `http://localhost:8501`
+2. In the terminal type:
+```
+git clone https://github.com/eddieleejw/textgpt.git
+cd textgpt
+conda env create -f environment_win.yml
+conda activate textgpt
+pip install requirements_win.txt
+streamlit run streamlit.py
+```
+3. In a browser, type into the address bar: `http://localhost:8501`
 
 # Installation (Mac M1)
-
+1. Open terminal and navigate to the directory you want to put the repo in
+2. In the terminal type:
+```
+git clone https://github.com/eddieleejw/textgpt.git
+cd textgpt
+conda env create -f environment_mac.yml
+conda activate textgpt
+pip install requirements_mac.txt
+streamlit run streamlit.py
+```
+3. In a browser, type into the address bar: `http://localhost:8501`
 
 
 
