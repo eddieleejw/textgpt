@@ -66,6 +66,8 @@ The chatbot will ask you for your OpenAI API key, in order to access the OpenAI 
 
 ### Building a database
 
+
+
 ### Querying the database
 
 1. Open streamlit with `streamlit run streamlit.py`

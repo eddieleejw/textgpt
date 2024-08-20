@@ -59,7 +59,7 @@ def rescan_projects(session_state):
 
     # make dbs directory if it DNE
     if not os.path.exists("dbs"):
-        os.makedirs("dbs")
+        os.makedirs("dbs", exist_ok=True)
 
     for file_name in os.listdir("dbs"):
         if file_name not in [".DS_Store"]:
