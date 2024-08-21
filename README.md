@@ -70,27 +70,63 @@ You will need a valid OpenAI API key to use this chatbot
 
 3. Select "+ Create new secret key", give it a name, and select "Create secret key"
 
-The chatbot will ask you for your OpenAI API key, in order to access the OpenAI language models. 
+The chatbot will ask you for your OpenAI API key, in order to access the OpenAI language models. Paste your API key here
+
+![api](images/openapi.png)
+
 
 ## Building a database
 
+1. Select the "Build new" option from the "Database operation" drop down menu
+
+2. Drag and drop file(s) that you want to use to create the initial database
+
+3. Give the project a name
+
+4. Press "Go!"
+
+![build](images/build.png)
+
+## Updating a database
+
+1. Select the "Update existing" option from the "Database operation" drop down menu
+
+2. Drag and drop file(s) that you want to use to create the initial database
+
+3. Select existing project from the drop down menu
+    - Press "Rescan projects" if your project is not showing up in the dropdown menu
+
+4. Press "Go!"
+
+![update](images/update.png)
+
+## Evaluating a database
+
+1. Select existing project from the drop down menu
+    - Press "Rescan projects" if your project is not showing up in the dropdown menu
+
+2. Drag and drop file(s) that you want to use to evaluate the database
+
+3. Set the number of evaluation data points to use
+    - Higher values will use more of the provided files and provide more accurate evaluations, but will take longer and use more API calls
+    - Lower values will use less of the provided files and provide less accurate evaluations, but will take less time and use less API calls
+
+4. Press "Go!"
+
+![eval](images/evaluate.png)
 
 
 ## Querying the database
 
-1. Open streamlit with `streamlit run main.py`
+1. Select existing project from the drop down menu
+    - Press "Rescan projects" if your project is not showing up in the dropdown menu
 
-2. Put in your OpenAI API key
+2. Enter your query
 
-3. Select your project
+3. Press "Go!"
 
-4. Put in your query
+![query](images/query.png)
 
-5. Press `Run`
-
-# Example
-
-![test](images/demo.png)
 
 # Troubleshooting
 
@@ -98,4 +134,4 @@ The chatbot will ask you for your OpenAI API key, in order to access the OpenAI 
 
 Ensure that you have [Microsoft Visual C++ 14.0](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or greater installed
 
-![blah](images/windows_vs_install.png)
+![vs_install](images/windows_vs_install.png)
