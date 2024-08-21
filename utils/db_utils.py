@@ -7,7 +7,7 @@ import tqdm
 import uuid
 import pickle
 # from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
-from utils.doc_utils import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
+from utils.doc_utils import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc, uploaded_files_to_doc
 
 
 
@@ -182,3 +182,43 @@ def add_data_to_db(db_dir, embedding_function, new_data_directory, llm):
     merged_docstore.update(new_docstore)
 
     save_artifacts(document_data = merged_document_data, docstore = merged_docstore, save_dir = db_dir)
+
+
+
+def add_uploaded_files_to_db(db_dir, embedding_function, uploaded_files, llm):
+    # load old db
+    db, docstore, document_data = load_db_and_artifcats(db_dir, embedding_function)
+
+    # generate new document_data (summaries)
+    # new_docs = new_data_to_doc(new_data_directory)
+    new_docs = uploaded_files_to_doc(uploaded_files)
+
+    new_document_data = create_document_data(new_docs, llm)
+
+    # add documents
+    db_update(db, new_document_data)
+
+    # make new docstore and document_data
+    merged_document_data = document_data + new_document_data
+    new_docstore = {doc['doc_id'] : Document(page_content = doc['page_content'], metadata = {'source' : doc['source']}) for doc in new_document_data}
+    merged_docstore = docstore
+    merged_docstore.update(new_docstore)
+
+    save_artifacts(document_data = merged_document_data, docstore = merged_docstore, save_dir = db_dir)
+
+
+def uploaded_files_to_db(uploaded_files, embedding_function, llm, save_dir):
+    os.makedirs(save_dir, exist_ok = True)
+
+    # load in pdf and txts as "docs"
+    # docs = new_data_to_doc(new_data_directory)
+    docs = uploaded_files_to_doc(uploaded_files)
+
+    # create summarise and id, save to document_data
+    document_data = create_document_data(docs, llm)
+
+    # embed to database and create docstore
+    db, docstore = create_db(document_data, save_dir, embedding_function = embedding_function)
+
+    # save artifacts
+    save_artifacts(document_data = document_data, docstore = docstore, save_dir = save_dir)

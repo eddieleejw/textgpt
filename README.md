@@ -17,9 +17,7 @@ cd textgpt
 conda env create -f environment_win.yml
 conda activate textgpt
 pip install requirements_win.txt
-streamlit run streamlit.py
 ```
-3. In a web browser, type into the address bar: `http://localhost:8501`
 
 ## Mac M1
 1. Open terminal and navigate to the directory you want to put the repo in
@@ -30,31 +28,41 @@ cd textgpt
 conda env create -f environment_mac.yml
 conda activate textgpt
 pip install requirements_mac.txt
-streamlit run streamlit.py
 ```
-3. In a web browser, type into the address bar: `http://localhost:8501`
 
 ## Installation (Docker)
 
 1. Install [Docker](https://www.docker.com/) 
     - Confirm docker installation by opening terminal and typing `docker -v`. It should tell you your docker version
 2. Open terminal and navigate to the directory you want to put the repo in
-3. In the terminal type:
+3. Make sure Docker is running
+4. In the terminal type:
 ```
 git clone https://github.com/eddieleejw/textgpt.git
 cd textgpt
 docker build -t textgpt-image .
-docker run -p 8501:8501 textgpt-image
 ```
-4. In a web browser, type into the address bar: `http://localhost:8501` (not `http://0.0.0.0:8501`)
 
 
 
 # Usage
 
-You will need a valid OpenAI API key to use this chatbot
+## Launch
 
-### OpenAI API Key
+### Windows / Mac
+
+1. Open terminal and navigate (e.g. `cd`) to the repository
+2. Type into terminal `streamlit run main.py`
+3. In a web browser, type into the address bar: `http://localhost:8501`
+
+### Docker
+1. Open terminal and type `docker run -p 8501:8501 textgpt-image`
+2. In a web browser, type into the address bar: `http://localhost:8501` (not `http://0.0.0.0:8501`)
+
+
+## OpenAI API Key
+
+You will need a valid OpenAI API key to use this chatbot
 
 1. Sign up for an [OpenAI account](https://openai.com/index/openai-api/)
 
@@ -64,13 +72,13 @@ You will need a valid OpenAI API key to use this chatbot
 
 The chatbot will ask you for your OpenAI API key, in order to access the OpenAI language models. 
 
-### Building a database
+## Building a database
 
 
 
-### Querying the database
+## Querying the database
 
-1. Open streamlit with `streamlit run streamlit.py`
+1. Open streamlit with `streamlit run main.py`
 
 2. Put in your OpenAI API key
 

@@ -1,14 +1,15 @@
 from langchain_openai import ChatOpenAI
 import streamlit as st
 import os
+from utils.db_utils import create_document_data, db_update, load_db_and_artifcats, save_artifacts
+from utils.doc_utils import uploaded_files_to_doc
 from utils.generate_qna_utils import load_contents, generate_qna, process_text
+from langchain_core.documents import Document
+import shutil
 
-def db_error_check(new_data_directory, session_state):
-    if not os.path.exists(new_data_directory):
-        st.error("New data directory does not exist")
-        return False
-    elif not os.listdir(new_data_directory):
-        st.error("New data directory is empty")
+def db_error_check(session_state):
+    if not session_state["uploaded_files"]:
+        st.error("No files uploaded")
         return False
     elif not session_state["db_project"]:
         st.error("Project not specified")
@@ -66,3 +67,20 @@ def rescan_projects(session_state):
             available_projects.append(file_name)
     
     session_state["available_projects"] = tuple(available_projects)
+
+
+def write_uploaded_files_to_disk(uploaded_files, dir):
+
+    os.makedirs(dir)
+
+    for uploaded_file in uploaded_files:
+        file_name = uploaded_file.name
+        file_value = uploaded_file.getvalue()
+
+        with open(f"{dir}/{file_name}", "wb") as f:
+            f.write(file_value)
+
+            print(f"DEBUG: writing to {dir}/{file_name}")
+
+def cleanup_uploaded_files(dir):
+    shutil.rmtree(dir)

@@ -125,6 +125,37 @@ def new_data_to_doc(directory):
     print(f"Generated {len(docs)} chunks")
     return docs
 
+def uploaded_files_to_doc(uploaded_files):
+    docs = []
+    splitter = RecursiveCharacterTextSplitter()
+
+    for uploaded_file in uploaded_files:
+        if uploaded_file.name.endswith("txt"):
+            loader = UnstructuredPDFLoader(uploaded_file)
+            pages = loader.load_and_split()
+            for page in pages:
+                docs.append({'page_content' : page.page_content, 'source' : uploaded_file.name})
+        elif uploaded_file.name.endswith(".pdf"):
+            loader = TextLoader(uploaded_file)
+            pages = loader.load_and_split()
+            for page in pages:
+                docs.append({'page_content' : page.page_content, 'source' : uploaded_file.name})
+        elif uploaded_file.name.endswith(".pkl"):
+            with open(uploaded_file, "rb") as f:
+                temp_docs = pickle.load(f)
+
+            # split docs
+            for doc in temp_docs:
+                page_content = doc['page_content']
+
+                split_texts = splitter.split_text(page_content)
+
+                for text in split_texts:
+                    docs.append({'page_content': text, 'source': doc['source']})
+
+    print(f"Generated {len(docs)} chunks")
+    return docs
+
 
 
 if __name__ == "__main__":

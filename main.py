@@ -4,8 +4,8 @@ from langchain_openai import ChatOpenAI
 import os
 import uuid
 from utils.query_utils import load_db, query_chatbot
-from utils.db_utils import add_data_to_db, data_to_db
-from utils.streamlit_utils import db_error_check, print_bertscores, generate_qna_streamlit, rescan_projects
+from utils.db_utils import add_data_to_db, data_to_db, add_uploaded_files_to_db, uploaded_files_to_db
+from utils.streamlit_utils import cleanup_uploaded_files, db_error_check, print_bertscores, generate_qna_streamlit, rescan_projects, write_uploaded_files_to_disk
 from utils.evaluation_utils import evaluate_bertscore
 import uuid
 
@@ -36,7 +36,8 @@ st.header("Build")
 
 st.session_state["db_type"] = st.selectbox("Database operation", ["Build new", "Update existing"])
 
-st.session_state["db_data_path"] = st.text_input("Path to new data directory")
+# st.session_state["db_data_path"] = st.text_input("Path to new data directory")
+st.session_state["uploaded_files"] = st.file_uploader("Upload files to build/update database", accept_multiple_files = True)
 
 if st.session_state["db_type"] == "Update existing":
     st.session_state["db_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "1")
@@ -44,61 +45,70 @@ if st.session_state["db_type"] == "Update existing":
     if st.button("Rescan projects", type = "primary", key = "2"):
         rescan_projects(st.session_state)
         st.rerun()
+    
+    
+else:
+    st.session_state["db_project"] = st.text_input("Name of project")
 
-    root_dir = f"dbs/{st.session_state["db_project"]}"
 
-    st.write(f"NOTE: Fetching new data from `{st.session_state["db_data_path"]}`")
+
+
+
+root_dir = f"dbs/{st.session_state["db_project"]}"
+
+if st.session_state["db_type"] == "Update existing":
     st.write(f"NOTE: Existing database must be at`{root_dir}/db`")
-
-    if st.button("Go!"):
-
-        new_data_directory = st.session_state["db_data_path"]
-        if db_error_check(new_data_directory, st.session_state):
+else:
+    st.write(f"NOTE: Writing database to `{root_dir}/db`")
 
 
+if st.button("Go!"):
 
-        # if not os.path.exists(new_data_directory):
-        #     st.error("New data directory does not exist")
-        # elif not os.listdir(new_data_directory):
-        #     st.error("New data directory is empty")
-        # elif not st.session_state["db_project"]:
-        #     st.error("Project not specified")
-        # elif not st.session_state["openai_api_key"]:
-        #     st.error("Please enter an OpenAI API key")
-        # else:
+    if db_error_check(st.session_state):
+
+        # write the uploaded files to temporary storage
+        temp_data_dir = "f8d0ca0"
+        if os.path.exists(temp_data_dir):
+            cleanup_uploaded_files(temp_data_dir)
+        write_uploaded_files_to_disk(st.session_state["uploaded_files"], temp_data_dir)
+
+
+        if st.session_state["db_type"] == "Update existing":
             with st.spinner("Updating database..."):
-
+                # add_uploaded_files_to_db(
+                #     db_dir = f"{root_dir}/db",
+                #     embedding_function = OpenAIEmbeddings(),
+                #     uploaded_files = st.session_state["uploaded_files"],
+                #     llm = ChatOpenAI(model="gpt-4o-mini")
+                # )
                 add_data_to_db(
                     db_dir = f"{root_dir}/db",
                     embedding_function = OpenAIEmbeddings(),
-                    new_data_directory = new_data_directory,
+                    new_data_directory= temp_data_dir,
                     llm = ChatOpenAI(model="gpt-4o-mini")
-                    )
+                )
             st.success("Database updated!")
-else:
-    st.session_state["db_project"] = st.text_input("Name of project")
-    root_dir = f"dbs/{st.session_state["db_project"]}"
-
-    st.write(f"NOTE: Fetching new data from `{st.session_state["db_data_path"]}`")
-    st.write(f"NOTE: Writing database to `{root_dir}/db`")
-
-    if st.button("Go!"):
-
-        new_data_directory = st.session_state["db_data_path"]
-        if db_error_check(new_data_directory, st.session_state):
-        # if not os.path.exists(new_data_directory):
-        #     st.error("New data directory does not exist")
-        # elif not os.listdir(new_data_directory):
-        #     st.error("New data directory is empty")
-        # elif not st.session_state["db_project"]:
-        #     st.error("Project not specified")
-        # elif not st.session_state["openai_api_key"]:
-        #     st.error("Please enter an OpenAI API key")
-        # else:
+        else:
             with st.spinner("Creating database..."):
-                data_to_db(new_data_directory, embedding_function = OpenAIEmbeddings(), llm = ChatOpenAI(model="gpt-4o-mini"), save_dir = f"{root_dir}/db")
+                # uploaded_files_to_db(
+                #     uploaded_files = st.session_state["uploaded_files"],
+                #     embedding_function = OpenAIEmbeddings(), 
+                #     llm = ChatOpenAI(model="gpt-4o-mini"), 
+                #     save_dir = f"{root_dir}/db"
+                # )
+
+                data_to_db(
+                    new_data_directory=temp_data_dir,
+                    embedding_function = OpenAIEmbeddings(), 
+                    llm = ChatOpenAI(model="gpt-4o-mini"), 
+                    save_dir = f"{root_dir}/db"
+                )
 
             st.success("Database created!")
+
+        # clean up temp storage
+        cleanup_uploaded_files(temp_data_dir)
+    
 
 st.divider()
 

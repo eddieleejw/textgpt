@@ -6,3 +6,6 @@ todo.md
 old
 venv
 data
+.vscode
+venv2
+test.txt

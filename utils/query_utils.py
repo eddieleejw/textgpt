@@ -9,7 +9,7 @@ from langchain_chroma import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 import pickle
-import pyperclip
+# import pyperclip
 
 
 
@@ -93,7 +93,7 @@ def get_prompt(query, db, docstore):
     return prompt.text, sources
 
 def copy_prompt(prompt, sources):
-    pyperclip.copy(prompt)
+    # pyperclip.copy(prompt)
     print("Prompt copied to clipboard\n")
     print("Sources:")
     for s in sources:
