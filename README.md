@@ -127,6 +127,17 @@ The chatbot will ask you for your OpenAI API key, in order to access the OpenAI 
 
 ![query](images/query.png)
 
+## Reusing a database
+
+Running `docker run -p 8501:8501 textgpt-image` every time will create new containers. To reuse the database(s) that you built before:
+
+1. Open to Docker desktop app
+
+2. Find the container in which you built the database
+
+3. Launch the container using the "Start" button
+
+![docker-reuse](images/docker_reuse.png)
 
 # Troubleshooting
 
