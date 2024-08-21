@@ -119,7 +119,8 @@ st.session_state["query_project"] = st.selectbox("Select project", st.session_st
 if st.button("Rescan projects", type = "primary", key = "7"):
     rescan_projects(st.session_state)
     st.rerun()
-st.session_state["eval_data_path"] = st.text_input("Specify path to directory holding evaluation data. The chatbot will be evaluated on its performance on these documents. It is recommended to evaluate on the documents the chatbot was trained on.")
+# st.session_state["eval_data_path"] = st.text_input("Specify path to directory holding evaluation data. The chatbot will be evaluated on its performance on these documents. It is recommended to evaluate on the documents the chatbot was trained on.")
+st.session_state["eval_uploaded_files"] = st.file_uploader("Upload files to evaluate database", accept_multiple_files = True)
 st.session_state["eval_number"] = st.text_input("How many evaluation data points to use. Higher yields more accurate results but will take longer and use more API requests. Leave blank to use all available data")
 
 if st.button("Go!", key = "5"):
@@ -146,13 +147,20 @@ if st.button("Go!", key = "5"):
 
         st.stop()
     
+    
 
     with st.spinner("Generating evaluation dataset"):
+
+        temp_eval_data_dir = "1def5f1b"
+        if os.path.exists(temp_eval_data_dir):
+            cleanup_uploaded_files(temp_eval_data_dir)
+        write_uploaded_files_to_disk(st.session_state["eval_uploaded_files"], temp_eval_data_dir)
 
         embedding_function = OpenAIEmbeddings()
         llm = ChatOpenAI(model = "gpt-4o-mini")
 
-        qa_pairs = generate_qna_streamlit(st.session_state["eval_data_path"])
+        qa_pairs = generate_qna_streamlit(temp_eval_data_dir)
+        cleanup_uploaded_files(temp_eval_data_dir)
 
 
     with st.spinner("Evaluating"):
