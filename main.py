@@ -34,7 +34,6 @@ page_names_to_funcs = {
     "Build": build_func,
     "Update": update_func,
     "Evaluate": eval_func,
-    "Query": query_func,
     "Chat": chat_func
 }
 page_name = st.sidebar.selectbox("Choose a function", page_names_to_funcs.keys())
