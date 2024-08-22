@@ -91,23 +91,17 @@ def write_uploaded_files_to_disk(uploaded_files, dir):
 def cleanup_uploaded_files(dir):
     shutil.rmtree(dir)
 
-def title_func():
-    st.title("TextGPT")
 
-    st.session_state["openai_api_key"] = st.text_input("OpenAI API key here")
-    os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
+def build_update_base(database_operation):
+    if database_operation not in ["Build new", "Update existing"]:
+        raise ValueError("Invalid database operation")
 
-    st.divider()
+    if database_operation == "Update existing":
+        st.header("Update")
+    else:
+        st.header("Build")
 
-def intro_func():
-    st.header("Please select a function from the dropdown menu on the left")
-
-
-def build_func():
-
-    st.header("Build")
-
-    st.session_state["db_type"] = st.selectbox("Database operation", ["Build new", "Update existing"])
+    st.session_state["db_type"] = database_operation
 
     # st.session_state["db_data_path"] = st.text_input("Path to new data directory")
     st.session_state["uploaded_files"] = st.file_uploader("Upload files to build/update database", accept_multiple_files = True)
@@ -181,10 +175,28 @@ def build_func():
 
             # clean up temp storage
             cleanup_uploaded_files(temp_data_dir)
+
+def title_func():
+    st.title("TextGPT")
+
+    st.session_state["openai_api_key"] = st.text_input("OpenAI API key here")
+    os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
+
+    st.divider()
+
+def intro_func():
+    st.header("Please select a function from the dropdown menu on the left")
+
+
+def build_func():
+    build_update_base("Build new")
         
 
 def update_func():
-    pass
+    build_update_base("Update existing")
+
+
+
 
 def eval_func():
     st.header("Evaluate")
