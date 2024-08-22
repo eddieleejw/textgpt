@@ -1,3 +1,6 @@
+from collections import defaultdict
+import json
+import time
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 import streamlit as st
@@ -7,6 +10,7 @@ from utils.db_utils import add_data_to_db, data_to_db, add_uploaded_files_to_db,
 from utils.doc_utils import uploaded_files_to_doc
 from utils.evaluation_utils import evaluate_bertscore
 from utils.generate_qna_utils import load_contents, generate_qna, process_text
+from utils.finetune_utils import create_finetuning_job
 from langchain_core.documents import Document
 import shutil
 import uuid
@@ -413,14 +417,121 @@ def chat_func():
         #     st.write("Sources:")
         #     for s in set(sources):
         #         st.write(f"- {s}")
-        source_and_answer = f"{answer}\n\nSources:\n"
-        for s in set(sources):
-            source_and_answer += f"- {s}\n"
         with st.chat_message("assistant", avatar=AI_AVATAR):
-            st.write(source_and_answer)
-        history.add_ai_message(source_and_answer)
+            st.write(answer)
+        history.add_ai_message(answer)
+
+        with st.expander("See sources"):
+            for s in set(sources):
+                st.write(f"- {s}")
+
     
 
+def finetune_func():
+    st.header("Finetune")
 
+    # st.session_state["db_data_path"] = st.text_input("Path to new data directory")
+    train_file = st.file_uploader("Upload training files for finetuning (required)", accept_multiple_files = False)
+    val_file = st.file_uploader("Upload validation files for finetuning (leave blank if no validation file)", accept_multiple_files = False)
+
+    finetune_base_model = st.selectbox("Select base model", ["gpt-4o-mini-2024-07-18", "gpt-4o-2024-08-06", "gpt-3.5-turbo-1106", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-0125", "davinci-002", "babbage-002"])
+
+
+    if st.button("Go!"):
+
+        if not train_file:
+            st.error("Please supply a training file")
+            st.stop()
+
+        # write the uploaded files to temporary storage
+        temp_data_dir = "ft8d0ca0"
+        if os.path.exists(temp_data_dir):
+            cleanup_uploaded_files(temp_data_dir)
+        if val_file:
+            write_uploaded_files_to_disk([train_file, val_file], temp_data_dir)
+        else:
+            write_uploaded_files_to_disk([train_file], temp_data_dir)
+
+        # validate format
+        if not streamlit_validate_ft_format(f"{temp_data_dir}/{train_file.name}"):
+            st.error("Training file is not in a valid format. See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for proper format.")
+            st.stop()
+        
+        if val_file and not streamlit_validate_ft_format(f"{temp_data_dir}/{val_file.name}"):
+            st.error("Validation file is not in a valid format. See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for proper format.")
+            st.stop()
+
+
+        with st.spinner("Creating finetuning job..."):
+
+            create_finetuning_job(
+                train_path=f"{temp_data_dir}/{train_file.name}",
+                val_path=f"{temp_data_dir}/{val_file.name}" if val_file else None,
+                model=finetune_base_model
+            )
+
+        time.sleep(3)
+
+        # clean up temp storage
+        cleanup_uploaded_files(temp_data_dir)
+
+        st.success("Finetuning job created! Check [OpenAI finetuning dashboard](https://platform.openai.com/finetune/ftjob-Waatof7eHXARVQoxwvHAGrEH?filter=all) to see status")
+
+def streamlit_validate_ft_format(data_path):
+    '''
+    source: https://cookbook.openai.com/examples/chat_finetuning_data_prep
+    '''
+
+    def load_data(data_path):
+        with open(data_path, 'r', encoding='utf-8') as f:
+            dataset = [json.loads(line) for line in f]
+
+        return dataset
+
+    try:
+        dataset = load_data(data_path)
+    except:
+        st.error("Error loading dataset. See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for proper format.")
+        st.stop()
+
+    format_errors = defaultdict(int)
+
+    for ex in dataset:
+        if not isinstance(ex, dict):
+            format_errors["data_type"] += 1
+            continue
+            
+        messages = ex.get("messages", None)
+        if not messages:
+            format_errors["missing_messages_list"] += 1
+            continue
+            
+        for message in messages:
+            if "role" not in message or "content" not in message:
+                format_errors["message_missing_key"] += 1
+            
+            if any(k not in ("role", "content", "name", "function_call", "weight") for k in message):
+                format_errors["message_unrecognized_key"] += 1
+            
+            if message.get("role", None) not in ("system", "user", "assistant", "function"):
+                format_errors["unrecognized_role"] += 1
+                
+            content = message.get("content", None)
+            function_call = message.get("function_call", None)
+            
+            if (not content and not function_call) or not isinstance(content, str):
+                format_errors["missing_content"] += 1
+        
+        if not any(message.get("role", None) == "assistant" for message in messages):
+            format_errors["example_missing_assistant_message"] += 1
+
+    if format_errors:
+        st.error("Found errors:")
+        for k, v in format_errors.items():
+            st.error(f"{k}: {v}")
+        return False
+    else:
+        # print("No errors found")
+        return True
 
 history = StreamlitChatMessageHistory(key = "chat_messages")

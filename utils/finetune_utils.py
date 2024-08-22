@@ -143,7 +143,7 @@ def count_tokens_and_estimate_cost(data_path):
     print(f"By default, you'll be charged for ~{n_epochs * n_billing_tokens_in_dataset} tokens")
 
 
-def create_finetuning_job(train_path, val_path):
+def create_finetuning_job(train_path, val_path = None, model = "gpt-4o-mini-2024-07-18"):
     '''
     train_path and val_path should be pathnames to ".jsonl" files that hold the training and validation data
     '''
@@ -154,16 +154,20 @@ def create_finetuning_job(train_path, val_path):
         purpose="fine-tune"
     ).id
 
-    val_file_id = client.files.create(
-        file=open(val_path, "rb"),
-        purpose="fine-tune"
-    ).id
+    if val_path:
+        val_file_id = client.files.create(
+            file=open(val_path, "rb"),
+            purpose="fine-tune"
+        ).id
+    else:
+        val_file_id = None
 
     client.fine_tuning.jobs.create(
         training_file=training_file_id, 
-        model="gpt-3.5-turbo-0125",
+        model=model,
         validation_file=val_file_id
     )
+
 
 def main():
     train_path = ""
