@@ -15,6 +15,7 @@ from langchain_core.documents import Document
 import shutil
 import uuid
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+import plotly.express as px
 
 
 
@@ -31,6 +32,16 @@ def db_error_check(session_state):
     
     return True
 
+def visualise_bertscores(bertscores_dict):
+    p_data = bertscores_dict["p"]["raw"]
+    r_data = bertscores_dict["r"]["raw"]
+    f1_data = bertscores_dict["f1"]["raw"]
+
+    df = [[d, "Precision"] for d in p_data] + [[d, "Recall"] for d in r_data] + [[d, "F1 score"] for d in f1_data]
+
+    fig = px.box(df,x = 1, y = 0)
+    
+    st.plotly_chart(fig, use_container_width=True)
 
 def print_bertscores(bertscores_dict):
     for score_type in ["p", "r", "f1"]:
@@ -266,7 +277,8 @@ def eval_func():
 
             bertscores_dict = evaluate_bertscore(db, docstore, llm, qa_pairs = qa_pairs, n = n)
 
-            print_bertscores(bertscores_dict)
+            # print_bertscores(bertscores_dict)
+            visualise_bertscores(bertscores_dict)
 
 
 

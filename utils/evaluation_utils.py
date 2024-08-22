@@ -59,6 +59,7 @@ def process_bertscores(bert_scores) -> dict:
     '''
 
     bertscores_dict = {}
+    bertscores_dict["raw"] = bert_scores
 
     for i, score_type in enumerate(["p", "r", "f1"]):
         temp_scores = [score[i].item() for score in bert_scores]
@@ -69,6 +70,7 @@ def process_bertscores(bert_scores) -> dict:
         bertscores_dict[score_type]["std"] = statistics.stdev(temp_scores)
         bertscores_dict[score_type]["max"] = max(temp_scores)
         bertscores_dict[score_type]["min"] = min(temp_scores)
+        bertscores_dict[score_type]["raw"] = temp_scores
 
     return bertscores_dict
 
