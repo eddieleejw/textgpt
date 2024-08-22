@@ -3,35 +3,6 @@ Leverage OpenAI ChatGPT to perform RAG over a collection of documents
 
 # Installation
 
-If you are on Windows 11 or Apple silicon, you may want to try their respective installation instructions first, as that removed the need for Docker
-
-If the installation instructions are not working or don't exist for your system, use the Docker installation instead
-
-## Windows 11
-
-1. Open terminal and navigate to the directory you want to put the repo in
-2. In the terminal type:
-```
-git clone https://github.com/eddieleejw/textgpt.git
-cd textgpt
-conda env create -f environment_win.yml
-conda activate textgpt
-pip install requirements_win.txt
-```
-
-## Mac M1
-1. Open terminal and navigate to the directory you want to put the repo in
-2. In the terminal type:
-```
-git clone https://github.com/eddieleejw/textgpt.git
-cd textgpt
-conda env create -f environment_mac.yml
-conda activate textgpt
-pip install requirements_mac.txt
-```
-
-## Installation (Docker)
-
 1. Install [Docker](https://www.docker.com/) 
     - Confirm docker installation by opening terminal and typing `docker -v`. It should tell you your docker version
 2. Open terminal and navigate to the directory you want to put the repo in
@@ -49,13 +20,6 @@ docker build -t textgpt-image .
 
 ## Launch
 
-### Windows / Mac
-
-1. Open terminal and navigate (e.g. `cd`) to the repository
-2. Type into terminal `streamlit run main.py`
-3. In a web browser, type into the address bar: `http://localhost:8501`
-
-### Docker
 1. Open terminal and type `docker run -p 8501:8501 textgpt-image`
 2. In a web browser, type into the address bar: `http://localhost:8501` (not `http://0.0.0.0:8501`)
 
