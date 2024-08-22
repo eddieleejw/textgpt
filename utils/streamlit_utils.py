@@ -10,6 +10,7 @@ from utils.generate_qna_utils import load_contents, generate_qna, process_text
 from langchain_core.documents import Document
 import shutil
 import uuid
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 
 
@@ -179,13 +180,11 @@ def build_update_base(database_operation):
 def title_func():
     st.title("TextGPT")
 
-    st.session_state["openai_api_key"] = st.text_input("OpenAI API key here")
-    os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
+    # os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
 
-    st.divider()
 
 def intro_func():
-    st.header("Please select a function from the dropdown menu on the left")
+    st.write("Please select a function from the dropdown menu on the left")
 
 
 def build_func():
@@ -268,6 +267,7 @@ def eval_func():
 
 
 def query_func():
+    # os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
     st.header("Query")
 
 
@@ -332,3 +332,95 @@ def query_func():
             for s in sources:
                 st.write(s)
 
+
+
+def chat_func():
+
+    AI_AVATAR = "👾"
+
+    # os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
+    # st.session_state["project"] = st.text_input("Project here")
+    with st.sidebar:
+        st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
+        if st.button("Rescan projects", type = "primary", key = "6"):
+            rescan_projects(st.session_state)
+            st.rerun()
+
+    for msg in history.messages:
+        avatar = AI_AVATAR if msg.type == "ai" else None
+        st.chat_message(msg.type, avatar=avatar).write(msg.content)
+
+    # with st.chat_message("assistant"):
+        # st.write("Ask away!")
+    if len(history.messages) == 0:
+        with st.chat_message("assistant", avatar=AI_AVATAR):
+            st.write("Ask away!")
+        history.add_ai_message("Ask away")
+
+    streamlit_prompt = st.chat_input("What would you like to know?")
+
+    # if st.button("Display"):
+    #     st.write("openai_api_key" in st.session_state)
+    #     st.write("project" in st.session_state)
+    #     st.write("query" in st.session_state)
+
+    if streamlit_prompt:
+    # if st.button("Go!", key = "8"):
+        if st.session_state["openai_api_key"] == "":
+            st.error("Please enter an OpenAI API key")
+            st.stop()
+        elif st.session_state["query_project"] == "":
+            st.error("Please enter a project")
+            st.stop()
+        elif streamlit_prompt == "":
+            st.error("Please enter a query")
+            st.stop()
+
+        with st.chat_message("user"):
+            st.write(streamlit_prompt)
+        history.add_user_message(streamlit_prompt)
+        
+
+        embedding_function = OpenAIEmbeddings()
+        llm = ChatOpenAI(model = "gpt-4o-mini")
+
+
+        root_dir = f"dbs/{st.session_state["query_project"]}"
+        db_dir = f"{root_dir}/db"
+
+        # check if db exists
+        if not os.path.exists(root_dir):
+            st.error(f"Project does not exist, or is in the incorrect location. Make sure that the project exists and has path `{root_dir}`")
+            st.stop()
+        elif not os.path.exists(db_dir):
+            st.error(f"Database does not exist, or is in the incorrect location. Make sure that the database exists and has path `{db_dir}`")
+            st.stop()
+
+        answer_path = f"{root_dir}/answers/{str(uuid.uuid4())}.md"
+        os.makedirs(f"{root_dir}/answers", exist_ok=True)
+
+        db, docstore = load_db(db_dir, embedding_function)
+
+        try:
+            answer, sources = query_chatbot(streamlit_prompt, db, docstore, llm)
+        except:
+            st.error("Unable to generate answer. Please check OpenAI API key, or try again later")
+            st.stop()
+
+        # with st.chat_message("assistant"):
+        #     st.markdown(answer)
+
+        #     st.write("Sources:")
+        #     for s in set(sources):
+        #         st.write(f"- {s}")
+        source_and_answer = f"{answer}\n\nSources:\n"
+        for s in set(sources):
+            source_and_answer += f"- {s}\n"
+        with st.chat_message("assistant", avatar=AI_AVATAR):
+            st.write(source_and_answer)
+        history.add_ai_message(source_and_answer)
+    
+
+
+
+history = StreamlitChatMessageHistory(key = "chat_messages")
