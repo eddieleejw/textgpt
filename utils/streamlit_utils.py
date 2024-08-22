@@ -430,6 +430,8 @@ def chat_func():
 def finetune_func():
     st.header("Finetune")
 
+    st.write("See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for how to prepare data for finetuning.")
+
     # st.session_state["db_data_path"] = st.text_input("Path to new data directory")
     train_file = st.file_uploader("Upload training files for finetuning (required)", accept_multiple_files = False)
     val_file = st.file_uploader("Upload validation files for finetuning (leave blank if no validation file)", accept_multiple_files = False)
