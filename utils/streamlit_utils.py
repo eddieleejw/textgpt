@@ -357,6 +357,15 @@ def chat_func():
     # os.environ["OPENAI_API_KEY"] = st.session_state["openai_api_key"]
     # st.session_state["project"] = st.text_input("Project here")
     with st.sidebar:
+
+        st.session_state["model_type"] = st.selectbox("Model type", ["Base model", "Custom model"])
+
+        if st.session_state["model_type"] == "Base model":
+            chat_model = st.selectbox("Select a model", ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"])
+        else:
+            chat_model = st.text_input("Name of custom model (i.e. 'Output model')")
+
+
         st.session_state["query_project"] = st.selectbox("Select project", st.session_state["available_projects"], key = "3")
         if st.button("Rescan projects", type = "primary", key = "6"):
             rescan_projects(st.session_state)
@@ -385,6 +394,9 @@ def chat_func():
         if st.session_state["openai_api_key"] == "":
             st.error("Please enter an OpenAI API key")
             st.stop()
+        elif not chat_model:
+            st.error("Please specify a chat model")
+            st.stop()
         elif st.session_state["query_project"] == "":
             st.error("Please enter a project")
             st.stop()
@@ -398,7 +410,8 @@ def chat_func():
         
 
         embedding_function = OpenAIEmbeddings()
-        llm = ChatOpenAI(model = "gpt-4o-mini")
+        # llm = ChatOpenAI(model = "gpt-4o-mini")
+        llm = ChatOpenAI(model = chat_model)
 
 
         root_dir = f"dbs/{st.session_state["query_project"]}"
@@ -417,18 +430,14 @@ def chat_func():
 
         db, docstore = load_db(db_dir, embedding_function)
 
-        try:
-            answer, sources = query_chatbot(streamlit_prompt, db, docstore, llm)
-        except:
-            st.error("Unable to generate answer. Please check OpenAI API key, or try again later")
-            st.stop()
+        # try:
+        #     answer, sources = query_chatbot(streamlit_prompt, db, docstore, llm)
+        # except:
+        #     st.error("Unable to generate answer. Please check OpenAI API key, or try again later")
+        #     st.stop()
 
-        # with st.chat_message("assistant"):
-        #     st.markdown(answer)
+        answer, sources = query_chatbot(streamlit_prompt, db, docstore, llm)
 
-        #     st.write("Sources:")
-        #     for s in set(sources):
-        #         st.write(f"- {s}")
         with st.chat_message("assistant", avatar=AI_AVATAR):
             st.write(answer)
         history.add_ai_message(answer)

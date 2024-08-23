@@ -66,20 +66,6 @@ The chatbot will ask you for your OpenAI API key on launch in order to access th
 
 ![update](images/update.png)
 
-## Finetuning a model
-
-1. Select the "Finetune" option from the drop down menu on the left side of the page
-
-2. Upload a training file (required) and a validation file (optional) for finetuning
-    - See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for details on how to properly format your data
-
-3. Select a base model from the drop down menu
-
-4. Press "Go!"
-
-5. Check the status of the finetuning in your [OpenAPI dashboard](https://platform.openai.com/finetune)
-
-![update](images/finetune.png)
 
 ## Evaluating a database
 
@@ -99,15 +85,37 @@ The chatbot will ask you for your OpenAI API key on launch in order to access th
 ![eval](images/evaluate.png)
 
 
+## Finetuning a model
+
+1. Select the "Finetune" option from the drop down menu on the left side of the page
+
+2. Upload a training file (required) and a validation file (optional) for finetuning
+    - See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for details on how to properly format your data
+
+3. Select a base model from the drop down menu
+
+4. Press "Go!"
+
+5. Check the status of the finetuning in your [OpenAPI dashboard](https://platform.openai.com/finetune)
+
+![update](images/finetune.png)
+
+
 ## Chatting with chatbot
 
 1. Select the "Chat" option from the drop down menu on the left side of the page
 
-2. Select the project/database you want to chat about
+2. Select model type from the drop down menu on the left
+    - "Base model" gives you the option of choosing between recommended chat models available via the OpenAI API
+    - "Custom model" allows you to input any model to chat with. This is useful if you want to chat with a specific version of a model (e.g. "gpt-4o-2024-08-06") or with a custom finetuned model (e.g. "ft:gpt-3.5-turbo-0125:personal::abcdefg")
 
-3. Enter your query in the chatbot
+3. Select the model you want to chat with from the drop down menu (base model), or input your own (custom model)
 
-4. Click the "See sources" drop down to see the documents referred to by the chatbot
+4. Select the project/database you want to chat about
+
+5. Enter your query in the chat box
+
+6. Click the "See sources" drop down to see the documents referred to by the chatbot
 
 ![chat](images/chat.png)
 
