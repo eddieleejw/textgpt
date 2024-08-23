@@ -14,6 +14,8 @@ cd textgpt
 docker build -t textgpt-image .
 ```
 
+Building the image may take a few minutes.
+
 
 
 # Usage
@@ -34,14 +36,14 @@ You will need a valid OpenAI API key to use this chatbot
 
 3. Select "+ Create new secret key", give it a name, and select "Create secret key"
 
-The chatbot will ask you for your OpenAI API key, in order to access the OpenAI language models. Paste your API key here
+The chatbot will ask you for your OpenAI API key on launch in order to access the OpenAI language models.
 
 ![api](images/openapi.png)
 
 
 ## Building a database
 
-1. Select the "Build new" option from the "Database operation" drop down menu
+1. Select the "Build" option from the drop down menu on the left side of the page
 
 2. Drag and drop file(s) that you want to use to create the initial database
 
@@ -53,43 +55,62 @@ The chatbot will ask you for your OpenAI API key, in order to access the OpenAI 
 
 ## Updating a database
 
-1. Select the "Update existing" option from the "Database operation" drop down menu
+1. Select the "Update" option from the drop down menu on the left side of the page
 
-2. Drag and drop file(s) that you want to use to create the initial database
+2. Drag and drop file(s) that you want to use to update the initial database
 
-3. Select existing project from the drop down menu
+3. Select an existing project from the drop down menu
     - Press "Rescan projects" if your project is not showing up in the dropdown menu
 
 4. Press "Go!"
 
 ![update](images/update.png)
 
+## Finetuning a model
+
+1. Select the "Finetune" option from the drop down menu on the left side of the page
+
+2. Upload a training file (required) and a validation file (optional) for finetuning
+    - See [here](https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset) for details on how to properly format your data
+
+3. Select a base model from the drop down menu
+
+4. Press "Go!"
+
+5. Check the status of the finetuning in your [OpenAPI dashboard](https://platform.openai.com/finetune)
+
+![update](images/finetune.png)
+
 ## Evaluating a database
 
-1. Select existing project from the drop down menu
+1. Select the "Evaluate" option from the drop down menu on the left side of the page
+
+2. Select an existing project from the drop down menu
     - Press "Rescan projects" if your project is not showing up in the dropdown menu
 
-2. Drag and drop file(s) that you want to use to evaluate the database
+3. Drag and drop file(s) that you want to use to evaluate the database
 
-3. Set the number of evaluation data points to use
+4. Set the number of evaluation data points to use
     - Higher values will use more of the provided files and provide more accurate evaluations, but will take longer and use more API calls
     - Lower values will use less of the provided files and provide less accurate evaluations, but will take less time and use less API calls
 
-4. Press "Go!"
+5. Press "Go!"
 
 ![eval](images/evaluate.png)
 
 
-## Querying the database
+## Chatting with chatbot
 
-1. Select existing project from the drop down menu
-    - Press "Rescan projects" if your project is not showing up in the dropdown menu
+1. Select the "Chat" option from the drop down menu on the left side of the page
 
-2. Enter your query
+2. Select the project/database you want to chat about
 
-3. Press "Go!"
+3. Enter your query in the chatbot
 
-![query](images/query.png)
+4. Click the "See sources" drop down to see the documents referred to by the chatbot
+
+![chat](images/chat.png)
+
 
 ## Reusing a database
 
