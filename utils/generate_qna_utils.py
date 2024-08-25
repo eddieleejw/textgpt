@@ -44,25 +44,28 @@ def process_text(qnas):
     # Initialize lists to hold questions and answers
 
     for i, text in enumerate(qnas):
-        questions = []
-        answers = []
-
-        # Split the text into lines
-        lines = text.split('\n')
-
-        # Iterate through the lines
-        for line in lines:
-            if line.startswith("Question:"):
-                questions.append(line.replace("Question:", "").strip())
-            elif line.startswith("Answer:"):
-                answers.append(line.replace("Answer:", "").strip())
-            elif line != "":
-                answers[-1] += "\n" + line
-
         try:
-            qa_pairs += [{"Question": q, "Answer": a} for q, a in zip(questions, answers)]
+            questions = []
+            answers = []
+
+            # Split the text into lines
+            lines = text.split('\n')
+
+            # Iterate through the lines
+            for line in lines:
+                if line.startswith("Question:"):
+                    questions.append(line.replace("Question:", "").strip())
+                elif line.startswith("Answer:"):
+                    answers.append(line.replace("Answer:", "").strip())
+                elif line != "":
+                    answers[-1] += "\n" + line
+
+            try:
+                qa_pairs += [{"Question": q, "Answer": a} for q, a in zip(questions, answers)]
+            except:
+                print(f"Problem processing text {i}")
+                continue
         except:
-            print(f"Problem processing text {i}")
             continue
 
     return qa_pairs

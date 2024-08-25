@@ -8,6 +8,7 @@ import uuid
 import pickle
 # from docs import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc
 from utils.doc_utils import pdf_to_doc, pdf_txt_to_doc, pkl_to_doc, new_data_to_doc, uploaded_files_to_doc
+import time
 
 
 
@@ -22,10 +23,11 @@ def summarize_texts(texts, llm):
 
     chain = ({"doc" : lambda x : x} | prompt_template | llm | StrOutputParser())
 
-    # batch 100 at a time
-    print("Batching 100 queries at a time")
-    for i in tqdm.tqdm(range((len(texts)//100)+1), "batches"):
-        summaries += chain.batch(texts[100*i:100*(i+1)])
+    # batch 50 at a time
+    print("Batching 50 queries at a time")
+    for i in tqdm.tqdm(range((len(texts)//50)+1), "batches"):
+        summaries += chain.batch(texts[50*i:50*(i+1)])
+        time.sleep(1)
 
     assert len(summaries) == len(texts)
 
