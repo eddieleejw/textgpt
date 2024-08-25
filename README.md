@@ -1,5 +1,57 @@
 # TextGPT
-Leverage OpenAI ChatGPT to perform RAG over a collection of documents
+
+TextGPT is an open-source project designed to streamline the building and maintaining of RAG systems over local document stores. TextGPT utilises the [LangChain framework](https://www.langchain.com/), [OpenAI API](https://platform.openai.com/docs/overview), and [Chroma databases](https://www.trychroma.com/) to allow you to easily build, update, evaluate, and chat with custom RAG systems at the click of a button.
+
+With TextGPT you can easily:
+- **Build** vector databases using local files (`.txt` or `.pdf`)
+- **Update** existing vector databases using local files (`.txt` or `.pdf`)
+- **Chat** with built databases
+- **Evaluate** the performance of different vector databases to help you build databases best suited for your needs
+- **Finetune** base chat models from OpenAI, and use it as the LLM layer to provide even greater control over chat outputs
+
+Installation requires [Docker](https://www.docker.com/), which provides containerization and ensures that the program runs consistently across different machines without needing to manually install dependencies.
+
+This was initially developed as part of my [Google Summer of Code 2024](https://github.com/eddieleejw/gprmax_chatbot) project, but is now maintained as a standalone project, with the aim of creating accessible tools for building RAG systems.
+
+*Keywords: RAG, LangChain, LLM, Finetuning*
+
+# How does it work?
+
+### LLM
+
+A LLM (or large language model) are AI models designed to understand and generate human language. These models are trained on large amounts of text, and recent advances in these models have led to powerful and accessible chatbots, such as [ChatGPT](https://chatgpt.com/), with which you can interact with and have a conversation. These chatbots can be used for many tasks including answering questions, telling stories, and even assisting with complex problem-solving.
+
+However, as powerful as these models are, they are not free from drawbacks, one of the most prominent drawbacks being "hallucination".
+
+### Hallucination
+
+"Hallucination" refers to to possibility for a LLM model to generate information that is incorrect, misleading, or even entirely fabricated. This occurs because LLMs generate responses based on patterns learned from vast amounts of training data, as opposed to truly processing the meaning of the text it was trained on. Hence, when asked a question, it is likely that the model responds with an answer that is statiscally likely, but may not be correct. 
+
+Hallucinations can be particularly rampant in those settings where the LLM is being asked about subjects which the LLM never (or rarely) encountered in its training data. Some examples of such settings are:
+
+1. When the LLM is being asked on subjects which did not exist at the time the LLM was trained
+    - For instance, a LLM trained in 2022 cannot know about events that occured in 2024 such as how many medals the US won in the 2024 olympics
+
+2. When the LLM is being asked about niche or specialised topics
+    - Highly specialisted subjects would not be well represented in the data, such as very specific historical events or specific open source software
+
+One approach to mitigate hallucination is RAG (or retrieval augmented generation).
+
+### RAG
+
+In retrieval augmented generation, retrieval-based methods are combined with generative LLM models to provide more accurate responses on queries to which the LLM may have otherwise hallucinated.
+
+1. We start by hand-picking a collection of verified and accurate source documents from which we want the LLM response to be sourced.
+
+2. We then embed small chunks of these documents in a [vector database](https://www.pinecone.io/learn/vector-database/).
+
+3. At query-time, we use the vector database and retrieval-based methods such as a similarity search, to find document chunk(s) that are most relevant to the query.
+
+4. The LLM is supplied with the query and the context (as well as additional instructions such as to simply reply with "I don't know" if the given context can't answer the query) and generates a response.
+
+
+
+![RAG diagram](images/rag_flowchart.png)
 
 # Installation
 
