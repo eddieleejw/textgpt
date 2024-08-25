@@ -15,6 +15,8 @@ This was initially developed as part of my [Google Summer of Code 2024](https://
 
 *Keywords: RAG, LangChain, LLM, Finetuning*
 
+![demo_gif](images/textgpt_demo.gif)
+
 # How does it work?
 
 ### LLM
