@@ -19,13 +19,13 @@ This was initially developed as part of my [Google Summer of Code 2024](https://
 
 ### LLM
 
-A LLM (or large language model) are AI models designed to understand and generate human language. These models are trained on large amounts of text, and recent advances in these models have led to powerful and accessible chatbots, such as [ChatGPT](https://chatgpt.com/), with which you can interact with and have a conversation. These chatbots can be used for many tasks including answering questions, telling stories, and even assisting with complex problem-solving.
+LLMs (or large language models) are AI models designed to understand and generate human language. These models are trained on large amounts of text, and recent advances in these models have led to powerful and accessible chatbots, such as [ChatGPT](https://chatgpt.com/), with which you can interact with and have a conversation. These chatbots can be used for many tasks including answering questions, telling stories, and even assisting with complex problem-solving.
 
 However, as powerful as these models are, they are not free from drawbacks, one of the most prominent drawbacks being "hallucination".
 
 ### Hallucination
 
-"Hallucination" refers to to possibility for a LLM model to generate information that is incorrect, misleading, or even entirely fabricated. This occurs because LLMs generate responses based on patterns learned from vast amounts of training data, as opposed to truly processing the meaning of the text it was trained on. Hence, when asked a question, it is likely that the model responds with an answer that is statiscally likely, but may not be correct. 
+"Hallucination" refers to the possibility for a LLM model to generate information that is incorrect, misleading, or even entirely fabricated. This occurs because LLMs generate responses based on patterns learned from vast amounts of training data, as opposed to truly processing the meaning of the text it was trained on. Hence, when asked a question, it is likely that the model responds with an answer that is statiscally likely, but may not be correct. 
 
 Hallucinations can be particularly rampant in those settings where the LLM is being asked about subjects which the LLM never (or rarely) encountered in its training data. Some examples of such settings are:
 
@@ -33,13 +33,13 @@ Hallucinations can be particularly rampant in those settings where the LLM is be
     - For instance, a LLM trained in 2022 cannot know about events that occured in 2024 such as how many medals the US won in the 2024 olympics
 
 2. When the LLM is being asked about niche or specialised topics
-    - Highly specialisted subjects would not be well represented in the data, such as very specific historical events or specific open source software
+    - Highly specialised subjects would not be well represented in the data, such as very specific historical events or specific open source software
 
 One approach to mitigate hallucination is RAG (or retrieval augmented generation).
 
 ### RAG
 
-In retrieval augmented generation, retrieval-based methods are combined with generative LLM models to provide more accurate responses on queries to which the LLM may have otherwise hallucinated.
+In retrieval augmented generation, retrieval-based methods are combined with generative LLM models to provide more accurate responses to queries on which the LLM may have otherwise hallucinated.
 
 1. We start by hand-picking a collection of verified and accurate source documents from which we want the LLM response to be sourced.
 
@@ -88,7 +88,7 @@ You will need a valid OpenAI API key to use this chatbot
 
 3. Select "+ Create new secret key", give it a name, and select "Create secret key"
 
-The chatbot will ask you for your OpenAI API key on launch in order to access the OpenAI language models.
+The chatbot will ask you for your OpenAI API key on launch in order to access the OpenAI language models. These keys are only stored by the program temporarily and locally, never elsewhere. Keep your API key safe, as access to it will allow others to generate API calls on your behalf.
 
 ![api](images/openapi.png)
 
